@@ -30,9 +30,9 @@ func (a *App) ListenAndServe(addr string, dev bool) error {
 	router.HandleFunc("/assets/Quicksand_Bold.otf", serveFileFunc("./frontend/assets/Quicksand_Bold.otf"))
 
 	if dev {
-		return http.ListenAndServeTLS(addr, "./certificate.crt", "./private.key", router)
+		return http.ListenAndServe(addr, router)
 	}
-	return http.ListenAndServe(addr, router)
+	return http.ListenAndServeTLS(addr, "./certificate.crt", "./private.key", router)
 }
 
 func serveFileFunc(name string) func(http.ResponseWriter, *http.Request) {
