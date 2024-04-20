@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/gorilla/mux v1.8.1
-	github.com/sandertv/gophertunnel v1.35.0
+	github.com/sandertv/gophertunnel v1.36.1
 	golang.org/x/oauth2 v0.17.0
 )
 
@@ -17,6 +17,7 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/klauspost/compress v1.15.1 // indirect
 	github.com/muhammadmuzzammil1998/jsonc v1.0.0 // indirect
+	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/sandertv/go-raknet v1.12.0 // indirect
 	golang.org/x/crypto v0.19.0 // indirect
 	golang.org/x/image v0.5.0 // indirect
