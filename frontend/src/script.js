@@ -1,6 +1,6 @@
 function decrypt() {
     let input = document.getElementById('input').value;
-    let apiUrl = `$DOWNLOAD_ADDR/download?target=` + input;
+    let apiUrl = `$SERVER_ADDR/download?target=` + input;
 
     // Create a new XMLHttpRequest object
     let xhr = new XMLHttpRequest();

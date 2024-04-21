@@ -15,9 +15,9 @@ type App struct {
 }
 
 func (a *App) ListenAndServe(addr string, dev bool) error {
-	downloadAddr := "https://decryptmypack.com:443"
+	serverAddr := "https://decryptmypack.com:443"
 	if dev {
-		downloadAddr = "http://localhost:8080"
+		serverAddr = "http://localhost:8080"
 	}
 
 	router.HandleFunc("/download", a.download).Queries("target", "{target}")
@@ -25,7 +25,7 @@ func (a *App) ListenAndServe(addr string, dev bool) error {
 	router.HandleFunc("/", serveFileFunc("./frontend/static/home.html"))
 	router.HandleFunc("/style.css", serveFileFunc("./frontend/static/style.css"))
 	router.HandleFunc("/src/script.js", template.NewFS("./frontend/src/script.js", strings.NewReplacer(
-		"$DOWNLOAD_ADDR", downloadAddr,
+		"$SERVER_ADDR", serverAddr,
 	)))
 	router.HandleFunc("/assets/Quicksand_Bold.otf", serveFileFunc("./frontend/assets/Quicksand_Bold.otf"))
 
