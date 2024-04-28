@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/gorilla/mux v1.8.1
-	github.com/sandertv/gophertunnel v1.36.1
+	github.com/sandertv/gophertunnel v1.37.0
 	golang.org/x/oauth2 v0.17.0
 )
 
