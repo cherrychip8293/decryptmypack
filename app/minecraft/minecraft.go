@@ -3,6 +3,7 @@ package minecraft
 import (
 	"github.com/sandertv/gophertunnel/minecraft"
 	"strings"
+	"time"
 )
 
 func Connect(target string) (*minecraft.Conn, error) {
@@ -12,7 +13,7 @@ func Connect(target string) (*minecraft.Conn, error) {
 
 	serverConn, err := minecraft.Dialer{
 		TokenSource: src,
-	}.Dial("raknet", target)
+	}.DialTimeout("raknet", target, time.Minute*3)
 	if err != nil {
 		return nil, err
 	}

@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"crypto/aes"
 	"encoding/json"
+	"fmt"
 	"github.com/sandertv/gophertunnel/minecraft/resource"
 	"io"
 	"os"
@@ -67,11 +68,18 @@ func DecryptPack(buf []byte, key string) ([]byte, error) {
 	var content Content
 	path := contentPath(r)
 
-	cf, err := r.Open(path + "/contents.json")
+	contentsPath := "contents.json"
+	if len(path) > 0 {
+		contentsPath = path + contentsPath
+	}
+
+	cf, err := r.Open(contentsPath)
 	if err != nil {
 		if os.IsNotExist(err) {
+			fmt.Println(err)
 			return nil, nil
 		}
+		fmt.Println(err)
 		return nil, err
 	}
 
@@ -86,7 +94,11 @@ func DecryptPack(buf []byte, key string) ([]byte, error) {
 	}
 
 	for _, entry := range content.Content {
-		f, err := r.Open(path + "/" + entry.Path)
+		filePath := entry.Path
+		if len(path) > 0 {
+			filePath = path + "/" + entry.Path
+		}
+		f, err := r.Open(filePath)
 		if err != nil {
 			continue
 		}
@@ -104,6 +116,9 @@ func DecryptPack(buf []byte, key string) ([]byte, error) {
 
 func contentPath(r *zip.Reader) string {
 	for _, f := range r.File {
+		if strings.EqualFold(f.Name, "contents.json") {
+			return ""
+		}
 		if strings.HasSuffix(f.Name, "contents.json") {
 			return strings.Split(f.Name, "/")[0]
 		}
