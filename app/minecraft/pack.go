@@ -76,10 +76,10 @@ func DecryptPack(buf []byte, key string) ([]byte, error) {
 	cf, err := r.Open(contentsPath)
 	if err != nil {
 		if os.IsNotExist(err) {
-			fmt.Println(err)
+			fmt.Printf("contents.json not found in %s\n", path)
 			return nil, nil
 		}
-		fmt.Println(err)
+		fmt.Printf("error opening contents.json: %v\n", err)
 		return nil, err
 	}
 
