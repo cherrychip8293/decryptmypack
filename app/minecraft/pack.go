@@ -33,13 +33,13 @@ func decryptCBF(data []byte, key []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	shift_register := append(key[:16], data...) // prefill with iv + cipherdata
+	shiftRegister := append(key[:16], data...) // prefill with iv + cipherdata
 	_tmp := make([]byte, 16)
 	off := 0
 	for off < len(data) {
-		b.Encrypt(_tmp, shift_register)
+		b.Encrypt(_tmp, shiftRegister)
 		data[off] ^= _tmp[0]
-		shift_register = shift_register[1:]
+		shiftRegister = shiftRegister[1:]
 		off++
 	}
 	return data, nil
