@@ -34,11 +34,12 @@ func decryptCBF(data []byte, key []byte) ([]byte, error) {
 	}
 
 	shiftRegister := append(key[:16], data...) // prefill with iv + cipherdata
-	_tmp := make([]byte, 16)
+	tmp := make([]byte, 16)
+
 	off := 0
 	for off < len(data) {
-		b.Encrypt(_tmp, shiftRegister)
-		data[off] ^= _tmp[0]
+		b.Encrypt(tmp, shiftRegister)
+		data[off] ^= tmp[0]
 		shiftRegister = shiftRegister[1:]
 		off++
 	}
