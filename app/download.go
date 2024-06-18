@@ -14,6 +14,7 @@ var (
 	commonServers = []string{
 		"zeqa.net",
 		"play.galaxite.net",
+		"play.cubecraft.net",
 	}
 	downloading = sync.Map{}
 )
