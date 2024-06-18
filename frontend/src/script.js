@@ -1,3 +1,13 @@
+function updateInputValue(input) {
+    let inputElement = document.getElementById('input');
+    inputElement.value = input;
+}
+
+function downloadSpecifiedServer(addr) {
+    updateInputValue(addr);
+    decrypt();
+}
+
 function decrypt() {
     let input = document.getElementById('input').value;
     let apiUrl = `$SERVER_ADDR/download?target=` + input;

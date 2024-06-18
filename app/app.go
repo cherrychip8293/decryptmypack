@@ -27,12 +27,19 @@ func (a *App) ListenAndServe(addr string, dev bool) error {
 	router.HandleFunc("/src/script.js", template.NewFS("./frontend/src/script.js", strings.NewReplacer(
 		"$SERVER_ADDR", serverAddr,
 	)))
-	router.HandleFunc("/assets/Quicksand_Bold.otf", serveFileFunc("./frontend/assets/Quicksand_Bold.otf"))
+	router.HandleFunc("/assets/{path}", serveDirFunc("./frontend"))
 
 	if dev {
 		return http.ListenAndServe(addr, router)
 	}
 	return http.ListenAndServeTLS(addr, "./certificate.crt", "./private.key", router)
+}
+
+// serverDirFunc serves files from the given directory.
+func serveDirFunc(dir string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, dir+r.URL.Path)
+	}
 }
 
 func serveFileFunc(name string) func(http.ResponseWriter, *http.Request) {

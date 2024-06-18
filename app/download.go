@@ -3,104 +3,135 @@ package app
 import (
 	"archive/zip"
 	"github.com/restartfu/decryptmypack/app/minecraft"
-	"io"
-	"net"
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"time"
 )
 
-var downloading = map[string]chan struct{}{}
+var (
+	commonServers = []string{
+		"zeqa.net",
+		"play.galaxite.net",
+	}
+	downloading = sync.Map{}
+)
+
+func init() {
+	for _, server := range commonServers {
+		go periodicallyDownloadPacks(server)
+	}
+}
+
+func periodicallyDownloadPacks(server string) {
+	for {
+		time.Sleep(time.Minute)
+		if err := downloadPacksFromServer(server); err != nil {
+			// Log the error (could use a proper logging framework)
+			continue
+		}
+		time.Sleep(time.Duration(60/len(commonServers)) * time.Minute)
+	}
+}
+
+func downloadPacksFromServer(server string) error {
+	conn, err := minecraft.Connect(server)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	packs := conn.ResourcePacks()
+	if len(packs) == 0 {
+		return nil
+	}
+
+	if err := os.MkdirAll("packs/"+server, 0777); err != nil {
+		return err
+	}
+
+	filePath := "packs/" + server + "/" + server + ".zip"
+	f, err := os.Create(filePath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	zipFile := zip.NewWriter(f)
+	defer zipFile.Close()
+
+	for _, pack := range packs {
+		buf, err := minecraft.EncodePack(pack)
+		if err != nil {
+			return err
+		}
+		if pack.Encrypted() {
+			buf, err = minecraft.DecryptPack(buf, pack.ContentKey())
+			if err != nil {
+				return err
+			}
+		}
+
+		p, err := zipFile.Create(pack.Name() + ".zip")
+		if err != nil {
+			return err
+		}
+		if _, err = p.Write(buf); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
 
 func (a *App) download(w http.ResponseWriter, r *http.Request) {
 	target := r.FormValue("target")
-	if len(target) == 0 {
+	if target == "" {
 		http.Error(w, "missing target", http.StatusBadRequest)
 		return
 	}
 
-	if len(strings.Split(target, ":")) == 2 {
-		target = strings.Split(target, ":")[0]
-	}
+	target = strings.Split(target, ":")[0]
 
-	addrs, _ := net.LookupHost(target)
-	addr := addrs[0]
-
-	if c, ok := downloading[addr]; ok {
-		<-c
+	if c, ok := downloading.Load(target); ok {
+		<-c.(chan struct{})
 	}
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET")
 	w.Header().Set("Access-Control-Expose-Headers", "Content-Disposition")
 
-	if f, err := os.Stat("packs/" + addr + "/" + addr + ".zip"); err == nil && time.Now().Sub(f.ModTime()) <= time.Minute*10 {
-		w.Header().Set("Content-Type", "application/zip")
-		w.Header().Set("Content-Disposition", "attachment; filename=\""+addr+".zip\"")
-		http.ServeFile(w, r, "packs/"+addr+"/"+addr+".zip")
+	filePath := "packs/" + target + "/" + target + ".zip"
+	if fileExistsAndFresh(filePath, time.Minute*60) {
+		serveFile(w, r, filePath)
 		return
 	}
 
-	downloading[addr] = make(chan struct{})
-	defer delete(downloading, addr)
+	c := make(chan struct{})
+	downloading.Store(target, c)
+	defer func() {
+		close(c)
+		downloading.Delete(target)
+	}()
 
-	conn, err := minecraft.Connect(target)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	defer conn.Close()
-
-	packs := conn.ResourcePacks()
-	if len(packs) == 0 {
-		http.Error(w, "The server does not have any resource pack.", http.StatusNotFound)
-		return
-	}
-
-	_ = os.Mkdir("packs/"+addr, 0777)
-	f, err := os.OpenFile("packs/"+addr+"/"+addr+".zip", os.O_CREATE|os.O_RDWR, 0666)
-	if err != nil {
+	if err := downloadPacksFromServer(target); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	zipFile := zip.NewWriter(f)
+	serveFile(w, r, filePath)
+}
 
-	for _, pack := range packs {
-		buf, err := minecraft.EncodePack(pack)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		if pack.Encrypted() {
-			newBuf, err := minecraft.DecryptPack(buf, pack.ContentKey())
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			if len(newBuf) > 0 {
-				buf = newBuf
-			}
-		}
-
-		p, err := zipFile.Create(pack.Name() + ".zip")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		_, err = p.Write(buf)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+func fileExistsAndFresh(filePath string, maxAge time.Duration) bool {
+	if fi, err := os.Stat(filePath); err == nil {
+		return time.Since(fi.ModTime()) <= maxAge
 	}
+	return false
+}
 
+func serveFile(w http.ResponseWriter, r *http.Request, filePath string) {
 	w.Header().Set("Content-Type", "application/zip")
-	w.Header().Set("Content-Disposition", "attachment; filename=\""+addr+".zip\"")
-
-	_ = zipFile.Close()
-	_, _ = f.Seek(0, 0)
-	_, _ = io.Copy(w, f)
-	_ = f.Close()
+	w.Header().Set("Content-Disposition", "attachment; filename=\""+strings.Split(filePath, "/")[1]+".zip\"")
+	http.ServeFile(w, r, filePath)
 }
