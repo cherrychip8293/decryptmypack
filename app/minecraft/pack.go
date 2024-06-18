@@ -28,7 +28,7 @@ func EncodePack(pack *resource.Pack) ([]byte, error) {
 }
 
 func decryptCBF(data []byte, key []byte) ([]byte, error) {
-	b, err := aes.NewCipher([]byte(key))
+	b, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
