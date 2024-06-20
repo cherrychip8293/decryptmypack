@@ -2,9 +2,11 @@ package app
 
 import (
 	"archive/zip"
+	"fmt"
 	"github.com/restartfu/decryptmypack/app/minecraft"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -28,7 +30,14 @@ func init() {
 func periodicallyDownloadPacks(server string) {
 	for {
 		time.Sleep(time.Minute)
-		if err := downloadPacksFromServer(server); err != nil {
+		filePath := "packs/" + server + "/19132/" + server + ".zip"
+
+		if err := os.MkdirAll("packs/"+server+"/19132", 0777); err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		if err := downloadPacksFromServer(filePath, server+":19132"); err != nil {
 			// Log the error (could use a proper logging framework)
 			continue
 		}
@@ -36,7 +45,8 @@ func periodicallyDownloadPacks(server string) {
 	}
 }
 
-func downloadPacksFromServer(server string) error {
+func downloadPacksFromServer(filePath string, server string) error {
+	filePath = strings.ToLower(filePath)
 	conn, err := minecraft.Connect(server)
 	if err != nil {
 		return err
@@ -48,11 +58,6 @@ func downloadPacksFromServer(server string) error {
 		return nil
 	}
 
-	if err := os.MkdirAll("packs/"+server, 0777); err != nil {
-		return err
-	}
-
-	filePath := "packs/" + server + "/" + server + ".zip"
 	f, err := os.Create(filePath)
 	if err != nil {
 		return err
@@ -82,7 +87,6 @@ func downloadPacksFromServer(server string) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -93,7 +97,18 @@ func (a *App) download(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	target = strings.Split(target, ":")[0]
+	var port = "19132"
+	split := strings.Split(target, ":")
+	target = split[0]
+
+	if len(split) > 1 {
+		_, err := strconv.Atoi(split[1])
+		if err != nil {
+			http.Error(w, "invalid port", http.StatusBadRequest)
+			return
+		}
+		port = split[1]
+	}
 
 	if c, ok := downloading.Load(target); ok {
 		<-c.(chan struct{})
@@ -103,7 +118,7 @@ func (a *App) download(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "GET")
 	w.Header().Set("Access-Control-Expose-Headers", "Content-Disposition")
 
-	filePath := "packs/" + target + "/" + target + ".zip"
+	filePath := "packs/" + target + "/" + port + "/" + target + ".zip"
 	if fileExistsAndFresh(filePath, time.Minute*60) {
 		serveFile(w, r, filePath)
 		return
@@ -116,7 +131,12 @@ func (a *App) download(w http.ResponseWriter, r *http.Request) {
 		downloading.Delete(target)
 	}()
 
-	if err := downloadPacksFromServer(target); err != nil {
+	if err := os.MkdirAll("packs/"+target+"/"+port, 0777); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := downloadPacksFromServer(filePath, target+":"+port); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
