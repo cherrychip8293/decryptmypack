@@ -2,13 +2,19 @@ package minecraft
 
 import (
 	"github.com/sandertv/gophertunnel/minecraft"
-	"strings"
 	"time"
 )
 
+var proxies []proxyInfo
+
+func init() {
+	proxies, _ = loadProxies("proxies.txt")
+}
+
 func Connect(target string) (*minecraft.Conn, error) {
-	if len(strings.Split(target, ":")) < 2 {
-		target = target + ":19132"
+	if len(proxies) > 0 {
+		// Override the default RakNet network with our anonymous RakNet network.
+		minecraft.RegisterNetwork("raknet", NewAnonymousRakNet(proxies))
 	}
 
 	serverConn, err := minecraft.Dialer{

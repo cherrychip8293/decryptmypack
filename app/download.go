@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"fmt"
 	"github.com/restartfu/decryptmypack/app/minecraft"
+	"net"
 	"net/http"
 	"os"
 	"strconv"
@@ -18,7 +19,13 @@ var (
 		"play.galaxite.net",
 		"play.cubecraft.net",
 	}
+	specialServers = []string{
+		"play.rustmc.online",
+	}
 	downloading = sync.Map{}
+
+	concurrentMax = 5
+	concurrent    int
 )
 
 func init() {
@@ -91,6 +98,16 @@ func downloadPacksFromServer(filePath string, server string) error {
 }
 
 func (a *App) download(w http.ResponseWriter, r *http.Request) {
+	if concurrent >= concurrentMax {
+		http.Error(w, "too many concurrent downloads", http.StatusServiceUnavailable)
+		return
+	}
+
+	concurrent++
+	defer func() {
+		concurrent--
+	}()
+
 	target := r.FormValue("target")
 	if target == "" {
 		http.Error(w, "missing target", http.StatusBadRequest)
@@ -100,6 +117,12 @@ func (a *App) download(w http.ResponseWriter, r *http.Request) {
 	var port = "19132"
 	split := strings.Split(target, ":")
 	target = split[0]
+
+	addrs, _ := net.LookupHost(target)
+	if len(addrs) == 0 {
+		http.Error(w, "invalid target", http.StatusBadRequest)
+		return
+	}
 
 	if len(split) > 1 {
 		_, err := strconv.Atoi(split[1])
@@ -117,6 +140,13 @@ func (a *App) download(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET")
 	w.Header().Set("Access-Control-Expose-Headers", "Content-Disposition")
+
+	for _, server := range specialServers {
+		if strings.EqualFold(target, server) {
+			serveFile(w, r, "packs/"+server+"/19132/"+server+".zip")
+			return
+		}
+	}
 
 	filePath := "packs/" + target + "/" + port + "/" + target + ".zip"
 	if fileExistsAndFresh(filePath, time.Minute*60) {
