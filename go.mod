@@ -28,7 +28,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
 	github.com/povsister/scp v0.0.0-20210427074412-33febfd9f13e // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
-	github.com/sandertv/go-raknet v1.14.0 // indirect
+	github.com/sandertv/go-raknet v1.14.1 // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
 	github.com/txthinking/runnergroup v0.0.0-20210608031112-152c7c4432bf // indirect
 	golang.org/x/crypto v0.24.0 // indirect

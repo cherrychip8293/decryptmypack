@@ -52,6 +52,8 @@ github.com/rogpeppe/go-internal v1.11.0 h1:cWPaGQEPrBb5/AsnsZesgZZ9yb1OQ+GOISoDN
 github.com/rogpeppe/go-internal v1.11.0/go.mod h1:ddIwULY96R17DhadqLgMfk9H9tvdUzkipdSkR5nkCZA=
 github.com/sandertv/go-raknet v1.14.0 h1:2vtO1m1DFLFszeCcV7mVZfVgkDcAbSxcjM2BlrVrEGs=
 github.com/sandertv/go-raknet v1.14.0/go.mod h1:/yysjwfCXm2+2OY8mBazLzcxJ3irnylKCyG3FLgUPVU=
+github.com/sandertv/go-raknet v1.14.1 h1:V2Gslo+0x4jfj+p0PM48mWxmMbYkxSlgeKy//y3ZrzI=
+github.com/sandertv/go-raknet v1.14.1/go.mod h1:/yysjwfCXm2+2OY8mBazLzcxJ3irnylKCyG3FLgUPVU=
 github.com/sandertv/gophertunnel v1.38.1-0.20240616191646-0124e15a718b h1:bJ9cN1CNx535klaYVxC5AWXff53oPHtOmo0hxGhXmok=
 github.com/sandertv/gophertunnel v1.38.1-0.20240616191646-0124e15a718b/go.mod h1:nqbZPCBZmKot/DHiY4efq8QQj6gvLvIk8LWPxXF8+6g=
 github.com/segmentio/fasthash v1.0.3 h1:EI9+KE1EwvMLBWwjpRDc+fEM+prwxDYbslddQGtrmhM=
