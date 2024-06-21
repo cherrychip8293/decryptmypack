@@ -18,6 +18,7 @@ var (
 		"zeqa.net",
 		"play.galaxite.net",
 		"play.cubecraft.net",
+		"hesu.org",
 	}
 	specialServers = []string{
 		"play.rustmc.online",
