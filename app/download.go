@@ -21,6 +21,7 @@ var (
 	}
 	specialServers = []string{
 		"play.rustmc.online",
+		"geo.hivebedrock.network",
 	}
 	downloading = sync.Map{}
 
@@ -117,6 +118,10 @@ func (a *App) download(w http.ResponseWriter, r *http.Request) {
 	var port = "19132"
 	split := strings.Split(target, ":")
 	target = split[0]
+
+	if strings.Contains(strings.ToLower(target), "hivebedrock.network") {
+		target = "geo.hivebedrock.network"
+	}
 
 	addrs, _ := net.LookupHost(target)
 	if len(addrs) == 0 {
