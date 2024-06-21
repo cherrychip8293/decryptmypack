@@ -29,6 +29,10 @@ func (a *App) ListenAndServe(addr string, dev bool) error {
 	)))
 	router.HandleFunc("/assets/{path}", serveDirFunc("./frontend"))
 
+	router.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/", http.StatusFound)
+	})
+
 	if dev {
 		return http.ListenAndServe(addr, router)
 	}
