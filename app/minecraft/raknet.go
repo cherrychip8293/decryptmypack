@@ -2,7 +2,7 @@ package minecraft
 
 import (
 	"context"
-	"github.com/sandertv/go-raknet"
+	"fmt"
 	"github.com/sandertv/gophertunnel/minecraft"
 	"net"
 )
@@ -21,17 +21,12 @@ func NewAnonymousRakNet(proxies []proxyInfo) *AnonymousRakNet {
 
 // DialContext ...
 func (a *AnonymousRakNet) DialContext(ctx context.Context, address string) (net.Conn, error) {
-	return raknet.Dialer{
-		UpstreamDialer: &upDialer{a},
-	}.DialContext(ctx, address)
-}
-
-type upDialer struct {
-	*AnonymousRakNet
-}
-
-func (u *upDialer) DialContext(ctx context.Context, network, address string) (net.Conn, error) {
-	return u.AnonymousRakNet.DialContext(ctx, address)
+	client := newClientWithProxy(randomProxy(a.proxies))
+	c, err := client.Dial("udp", address)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return c, err
 }
 
 // Dial ...
