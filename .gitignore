@@ -4,3 +4,5 @@ private.key
 ca_bundle.crt
 certificate.crt
 packs/
+app/ignore.go
+script/download.go

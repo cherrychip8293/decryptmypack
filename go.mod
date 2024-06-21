@@ -26,6 +26,7 @@ require (
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/muhammadmuzzammil1998/jsonc v1.0.0 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible // indirect
+	github.com/povsister/scp v0.0.0-20210427074412-33febfd9f13e // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/sandertv/go-raknet v1.14.0 // indirect
 	github.com/segmentio/fasthash v1.0.3 // indirect
