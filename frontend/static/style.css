@@ -45,7 +45,7 @@ input:active,
 input:focus {
     outline: none;
 }
-input:hover, .btn:hover, .server-btn:hover {
+input:hover, .btn:hover, .server-btn:hover, .discord-btn:hover {
     background-color: #0d86dd;
     cursor: pointer; /* Change cursor to pointer on hover */
 }
@@ -90,6 +90,23 @@ input::placeholder {
     align-self: center;
     font-family: Quicksand, sans-serif;
     padding: 0; /* Remove padding to fit the image properly */
+}
+
+.discord-btn {
+    width: 7vw;
+    height: 7vw; /* Make button square by setting equal width and height */
+    border-radius: 0.4vw; /* Adjust the value to control the roundness */
+    border: 0 solid;
+    background-color: #1581c0;
+    align-self: start;
+    font-family: Quicksand, sans-serif;
+    padding: 0; /* Remove padding to fit the image properly */
+}
+
+.discord-btn img {
+    width: 100%; /* Make the image fill the button */
+    height: 100%; /* Make the image fill the button */
+    border-radius: 0.4vw; /* Match the border-radius of the button */
 }
 
 .server-btn img {
