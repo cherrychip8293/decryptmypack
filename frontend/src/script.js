@@ -101,3 +101,11 @@ function hideDownload() {
     const loadingElement = document.getElementById('loading');
     loadingElement.style.opacity = '0';
 }
+
+function toDiscord() {
+    window.location.href = "https://discord.gg/SqTuFapfWv";
+}
+
+function toGithub() {
+    window.location.href = "https://github.com/RestartFU/decryptmypack"
+}

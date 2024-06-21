@@ -10,11 +10,6 @@ body {
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    height: 45vw;
     padding-left: 5vw;
     font-family: Quicksand, sans-serif;
 }
@@ -32,7 +27,7 @@ h1 {
 }
 
 input {
-    width: 7vw;
+    width: 9vw;
     height: 0.8vw;
     border-radius: 0.4vw;
     padding: 0.6vw;
@@ -48,7 +43,7 @@ input:focus {
     outline: none;
 }
 
-input:hover, .btn:hover, .server-btn:hover, .discord-btn:hover {
+input:hover, .btn:hover, .server-btn:hover {
     background-color: #0d86dd;
     cursor: pointer;
 }
@@ -58,7 +53,7 @@ input::placeholder {
 }
 
 .btn {
-    width: 7vw;
+    width: 8vw;
     height: 2vw;
     border-radius: 0.4vw;
     font-size: 0.7vw;
@@ -70,51 +65,68 @@ input::placeholder {
     padding: 0;
 }
 
-.btn img {
-    width: 100%;
-    height: 100%;
-    border-radius: 0.4vw;
-}
 
 .server-buttons {
+    position:fixed;
+
     display: flex;
-    flex-direction: row;
+
     gap: 1vw;
-    margin-top: 2vw;
+    right: 5vw;
+    bottom: 4vw;
 }
 
 .server-btn {
-    width: 7vw;
-    height: 7vw;
+    width: 8vw;
+    height: 8vw;
     border-radius: 0.4vw;
     border: 0 solid;
     background-color: #1581c0;
-    align-self: center;
     font-family: Quicksand, sans-serif;
     padding: 0;
-}
-
-.discord-btn {
-    width: 22vw;
-    height: 7vw;
-    border-radius: 0.4vw;
-    border: 0 solid;
-    background-color: #1581c0;
-    align-self: start;
-    font-family: Quicksand, sans-serif;
-    padding: 0;
-}
-
-.discord-btn img {
-    width: 100%;
-    height: 100%;
-    border-radius: 0.4vw;
 }
 
 .server-btn img {
     width: 100%;
     height: 100%;
     border-radius: 0.4vw;
+}
+
+.social {
+    position: absolute;
+    top: 1.5vw; 
+    padding: 4px 0;
+    right: 5vw; 
+
+    display: flex;
+    flex-direction: row;
+}
+
+.github, .discord {
+    background-color: transparent;
+    border-color: transparent;
+
+    height: 3vw;
+
+    border-radius: 0.4vw;
+}
+
+.discord:hover, .github:hover {
+    cursor: pointer;
+}
+
+.discord {
+    height: 3vw;
+    width: 7vw;
+}
+
+.footer {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    align-items: right;
+    height: 2vw;
+    width: 100%;
+    bottom: 0;
 }
 
 #loading {
@@ -147,7 +159,6 @@ input::placeholder {
     .container {
         height: auto;
         padding-left: 3vw;
-        align-items: center;
     }
 
     h1 {
@@ -160,29 +171,37 @@ input::placeholder {
     }
 
     input, .btn {
-        width: 50vw;
-        height: 8vw;
+        width: 30vw;
+        height: 7.2vw;
         font-size: 3vw;
     }
 
+    input, .input {
+        width: 30vw;
+        height: 6vw;
+    }
+
     .server-buttons {
-        flex-direction: column;
         align-items: center;
     }
 
-    .server-btn {
-        width: 50vw;
+    .server-btn {   
+        width: 15vw;
+        height: 15vw;
+    }
+
+    .github {
+        width: 8vw;
         height: 8vw;
     }
 
-    .discord-btn {
-        width: 50vw;
+    .discord {
+        width: 18vw;
         height: 8vw;
-        align-self: center;
     }
 
-    .server-btn img, .discord-btn img {
-        border-radius: 1vw;
+    .social {
+        gap: 2vw;
     }
 }
 
@@ -203,16 +222,5 @@ input::placeholder {
         width: 40vw;
         height: 10vw;
         font-size: 4vw;
-    }
-
-    .server-btn {
-        width: 40vw;
-        height: 25vw;
-    }
-
-    .discord-btn {
-        width: 50vw;
-        height: 10vw;
-        align-self: center;
     }
 }
