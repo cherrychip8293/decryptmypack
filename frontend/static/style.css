@@ -93,7 +93,7 @@ input::placeholder {
 }
 
 .discord-btn {
-    width: 7vw;
+    width: 22vw;
     height: 7vw; /* Make button square by setting equal width and height */
     border-radius: 0.4vw; /* Adjust the value to control the roundness */
     border: 0 solid;
